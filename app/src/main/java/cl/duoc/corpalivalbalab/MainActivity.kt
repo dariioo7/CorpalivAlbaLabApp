@@ -3,27 +3,30 @@ package cl.duoc.corpalivalbalab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import cl.duoc.corpalivalbalab.ui.navigation.Screen
+import cl.duoc.corpalivalbalab.ui.screens.CatalogoScreen
+import cl.duoc.corpalivalbalab.ui.screens.ContactoScreen
+import cl.duoc.corpalivalbalab.ui.screens.HomeScreen
 import cl.duoc.corpalivalbalab.ui.theme.CorpalivAlbaLabAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             CorpalivAlbaLabAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppNavigation()
                 }
             }
         }
@@ -31,17 +34,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavigation() {
+    val navController = rememberNavController()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CorpalivAlbaLabAppTheme {
-        Greeting("Android")
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route
+    ) {
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onNavigateToCatalogo = { navController.navigate(Screen.Catalogo.route) },
+                onNavigateToContacto = { navController.navigate(Screen.Contacto.route) }
+            )
+        }
+
+        composable(Screen.Catalogo.route) {
+            CatalogoScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Contacto.route) {
+            ContactoScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }
