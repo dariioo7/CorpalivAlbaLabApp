@@ -1,6 +1,7 @@
 package cl.duoc.corpalivalbalab.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,7 +24,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onProductoClick: (Int) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -50,29 +52,36 @@ fun CatalogoScreen(
                 .padding(paddingValues)
         ) {
             items(CatalogoData.productos) { producto ->
-                ProductoCard(producto = producto)
+                ProductoCard(
+                    producto = producto,
+                    onClick = { onProductoClick(producto.id) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun ProductoCard(producto: Producto) {
+fun ProductoCard(
+    producto: Producto,
+    onClick: () -> Unit
+) {
     val formatoMoneda = NumberFormat.getCurrencyInstance(Locale("es", "CL"))
     val precioFormateado = formatoMoneda.format(producto.precio)
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-
             Image(
                 painter = painterResource(id = producto.imagenResId),
                 contentDescription = producto.nombre,
-                contentScale = ContentScale.Crop, // ajustar la imagen
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)

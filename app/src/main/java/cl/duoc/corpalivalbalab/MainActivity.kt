@@ -8,12 +8,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import cl.duoc.corpalivalbalab.ui.navigation.Screen
 import cl.duoc.corpalivalbalab.ui.screens.CatalogoScreen
 import cl.duoc.corpalivalbalab.ui.screens.ContactoScreen
+import cl.duoc.corpalivalbalab.ui.screens.CotizacionScreen
 import cl.duoc.corpalivalbalab.ui.screens.HomeScreen
 import cl.duoc.corpalivalbalab.ui.theme.CorpalivAlbaLabAppTheme
 
@@ -50,12 +53,26 @@ fun AppNavigation() {
 
         composable(Screen.Catalogo.route) {
             CatalogoScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onProductoClick = { productoId ->
+                    navController.navigate(Screen.Cotizacion.createRoute(productoId))
+                }
             )
         }
 
         composable(Screen.Contacto.route) {
             ContactoScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Cotizacion.route,
+            arguments = listOf(navArgument("productoId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val productoId = backStackEntry.arguments?.getInt("productoId") ?: 1
+            CotizacionScreen(
+                productoId = productoId,
                 onBack = { navController.popBackStack() }
             )
         }
