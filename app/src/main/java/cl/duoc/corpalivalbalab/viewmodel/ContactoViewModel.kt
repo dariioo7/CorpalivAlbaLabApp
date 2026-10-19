@@ -1,13 +1,26 @@
 package cl.duoc.corpalivalbalab.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import cl.duoc.corpalivalbalab.data.local.AppDatabase
+import cl.duoc.corpalivalbalab.data.local.ContactoEntity
+import cl.duoc.corpalivalbalab.data.repository.ContactoRepository
 import cl.duoc.corpalivalbalab.ui.screens.ContactoUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class ContactoViewModel : ViewModel() {
+class ContactoViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: ContactoRepository
+
+    init {
+        val contactoDao = AppDatabase.getDatabase(application).contactoDao()
+        repository = ContactoRepository(contactoDao)
+    }
 
     private val _uiState = MutableStateFlow(ContactoUiState())
     val uiState: StateFlow<ContactoUiState> = _uiState.asStateFlow()
@@ -23,7 +36,6 @@ class ContactoViewModel : ViewModel() {
     }
 
     fun onTelefonoChanged(nuevoTelefono: String) {
-        // Permitir solo dígitos
         if (nuevoTelefono.all { it.isDigit() }) {
             _uiState.update { it.copy(telefono = nuevoTelefono, telefonoError = null) }
             validarFormulario()
@@ -52,25 +64,21 @@ class ContactoViewModel : ViewModel() {
         var errorTelefono: String? = null
         var errorFecha: String? = null
 
-        // validar nombre
         if (estadoActual.nombre.isBlank()) {
             errorNombre = "El nombre no puede estar vacío"
             hayError = true
         }
 
-        // validar correo
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(estadoActual.correo).matches()) {
             errorCorreo = "Ingrese un correo electrónico válido"
             hayError = true
         }
 
-        // validar telefono min 8 digitos
         if (estadoActual.telefono.length < 8) {
             errorTelefono = "El teléfono debe tener al menos 8 dígitos"
             hayError = true
         }
 
-        // validar fecha
         if (estadoActual.fechaContacto.isBlank()) {
             errorFecha = "Debe seleccionar una fecha de preferencia"
             hayError = true
@@ -87,11 +95,26 @@ class ContactoViewModel : ViewModel() {
                 )
             }
         } else {
-            _uiState.update {
-                it.copy(
-                    esFormularioValido = true,
-                    registroExitoso = true
+            // guardar en la base de datos
+            viewModelScope.launch {
+                val nuevoContacto = ContactoEntity(
+                    nombreCompleto = estadoActual.nombre,
+                    correo = estadoActual.correo,
+                    telefono = estadoActual.telefono.toIntOrNull() ?: 0,
+                    fechaContacto = estadoActual.fechaContacto,
+                    tipoColaboracion = "Alianza / General",
+                    requiereBoleta = estadoActual.requiereCertificado,
+                    suscribirBoletin = estadoActual.suscribirBoletin
                 )
+
+                repository.guardarContacto(nuevoContacto)
+
+                _uiState.update {
+                    it.copy(
+                        esFormularioValido = true,
+                        registroExitoso = true
+                    )
+                }
             }
         }
     }
@@ -107,6 +130,8 @@ class ContactoViewModel : ViewModel() {
     }
 
     fun resetearEstadoRegistro() {
-        _uiState.update { it.copy(registroExitoso = false) }
+        _uiState.update {
+            ContactoUiState()
+        }
     }
 }
