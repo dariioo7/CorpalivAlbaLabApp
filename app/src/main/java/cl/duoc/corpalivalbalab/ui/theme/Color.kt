@@ -2,10 +2,24 @@ package cl.duoc.corpalivalbalab.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val TealPrimary = Color(0xFF00796B)
+val TealOnPrimary = Color(0xFFFFFFFF)
+val TealContainer = Color(0xFFB2DFDB)
+val OnTealContainer = Color(0xFF004D40)
+
+
+val WarmSecondary = Color(0xFFE05A47)
+val WarmOnSecondary = Color(0xFFFFFFFF)
+val WarmSecondaryContainer = Color(0xFFFFDAD4)
+val OnWarmSecondaryContainer = Color(0xFF3B0903)
+
+
+val TertiaryAmber = Color(0xFFD97706)
+val OnTertiaryAmber = Color(0xFFFFFFFF)
+
+
+val BackgroundLight = Color(0xFFFBFDFB)
+val OnBackgroundLight = Color(0xFF191C1B)
+val SurfaceLight = Color(0xFFFBFDFB)
+val OnSurfaceLight = Color(0xFF191C1B)
