@@ -1,8 +1,11 @@
 package cl.duoc.corpalivalbalab.ui.screens
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.speech.RecognizerIntent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,8 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import cl.duoc.corpalivalbalab.R
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,35 +64,64 @@ fun HomeScreen(
         }
     }
 
+    // Función que lanza el reconocedor de voz cuando el permiso ya está concedido
+    fun startVoiceRecognition() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-CL")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es-CL")
+            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, "es-CL")
+            putExtra(
+                RecognizerIntent.EXTRA_PROMPT,
+                "Di 'Ver catálogo' o 'Contacto'"
+            )
+        }
+        try {
+            voiceLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(
+                context,
+                "El servicio de voz no está disponible en el dispositivo.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // Launcher para solicitar el permiso de micrófono al sistema
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            startVoiceRecognition()
+        } else {
+            Toast.makeText(
+                context,
+                "Permiso de micrófono denegado para la navegación por voz.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("CORPALIV / Alba Lab", fontWeight = FontWeight.Bold) },
                 actions = {
-                    // PUNTO 2 INTEGRADO: Botón de micrófono en la TopAppBar
-                    // Dentro de HomeScreen.kt, en el evento onClick del IconButton del micrófono:
-
                     IconButton(onClick = {
-                        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                            putExtra(
-                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                            )
-                            // Forzar el idioma explícitamente a español de Chile / General
-                            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-CL")
-                            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es-CL")
-                            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, "es-CL")
+                        // Verifica si el permiso de micrófono ya fue otorgado
+                        val permissionCheck = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.RECORD_AUDIO
+                        )
 
-                            putExtra(
-                                RecognizerIntent.EXTRA_PROMPT,
-                                "Di 'Ver catálogo' o 'Contacto'"
-                            )
-                        }
-                        try {
-                            voiceLauncher.launch(intent)
-                        } catch (e: Exception) {
-                            // En caso de que el dispositivo no tenga una app de reconocimiento de voz instalada
-                            e.printStackTrace()
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            startVoiceRecognition()
+                        } else {
+                            // Solicita el permiso al usuario
+                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                         }
                     }) {
                         Icon(
