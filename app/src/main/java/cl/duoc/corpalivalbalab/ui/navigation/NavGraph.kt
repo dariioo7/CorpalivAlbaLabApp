@@ -1,6 +1,7 @@
 package cl.duoc.corpalivalbalab.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +32,8 @@ fun NavGraph() {
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToCatalogo = { navController.navigate(Screen.Catalogo.route) },
-                onNavigateToContacto = { navController.navigate(Screen.Contacto.route) }
+                onNavigateToContacto = { navController.navigate(Screen.Contacto.route) },
+                onVoiceCommand = { command -> processVoiceCommand(command, navController) }
             )
         }
 
@@ -59,6 +61,27 @@ fun NavGraph() {
                 productoId = productoId,
                 onBack = { navController.popBackStack() }
             )
+        }
+    }
+}
+
+// PUNTO 3 INTEGRADO: Función de interpretación de comandos de voz y enrutamiento
+fun processVoiceCommand(command: String, navController: NavController) {
+    when {
+        command.contains("catálogo") || command.contains("productos") -> {
+            navController.navigate(Screen.Catalogo.route)
+        }
+        command.contains("contacto") || command.contains("ayuda") -> {
+            navController.navigate(Screen.Contacto.route)
+        }
+        command.contains("cotización") || command.contains("cotizar") -> {
+            // Navega por defecto a la cotización con producto ID = 1
+            navController.navigate(Screen.Cotizacion.createRoute(1))
+        }
+        command.contains("inicio") || command.contains("home") || command.contains("principal") -> {
+            navController.navigate(Screen.Home.route) {
+                popUpTo(Screen.Home.route) { inclusive = true }
+            }
         }
     }
 }
