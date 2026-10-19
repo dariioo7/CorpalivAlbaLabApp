@@ -2,6 +2,9 @@ package cl.duoc.corpalivalbalab.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -27,21 +31,74 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cl.duoc.corpalivalbalab.R
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToCatalogo: () -> Unit,
-    onNavigateToContacto: () -> Unit
+    onNavigateToContacto: () -> Unit,
+    onVoiceCommand: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val telefonoCorpaliv = "+56912345678"
     val direccionCorpaliv = "Lo Encalada 207, Ñuñoa, Santiago, Chile"
 
+    // Launcher para capturar la respuesta del reconocedor de voz nativo
+    val voiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val spokenText = result.data
+            ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            ?.firstOrNull()
+
+        spokenText?.lowercase()?.let { command ->
+            onVoiceCommand(command)
+            when {
+                command.contains("catálogo") || command.contains("productos") -> onNavigateToCatalogo()
+                command.contains("contacto") || command.contains("ayuda") -> onNavigateToContacto()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CORPALIV / Alba Lab", fontWeight = FontWeight.Bold) }
+                title = { Text("CORPALIV / Alba Lab", fontWeight = FontWeight.Bold) },
+                actions = {
+                    // PUNTO 2 INTEGRADO: Botón de micrófono en la TopAppBar
+                    // Dentro de HomeScreen.kt, en el evento onClick del IconButton del micrófono:
+
+                    IconButton(onClick = {
+                        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                            putExtra(
+                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                            )
+                            // Forzar el idioma explícitamente a español de Chile / General
+                            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-CL")
+                            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es-CL")
+                            putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, "es-CL")
+
+                            putExtra(
+                                RecognizerIntent.EXTRA_PROMPT,
+                                "Di 'Ver catálogo' o 'Contacto'"
+                            )
+                        }
+                        try {
+                            voiceLauncher.launch(intent)
+                        } catch (e: Exception) {
+                            // En caso de que el dispositivo no tenga una app de reconocimiento de voz instalada
+                            e.printStackTrace()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Mic,
+                            contentDescription = "Navegación por voz",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
