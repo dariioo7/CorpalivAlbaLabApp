@@ -1,11 +1,11 @@
 package cl.duoc.corpalivalbalab.viewmodel
 
 import android.app.Application
-import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.corpalivalbalab.data.local.AppDatabase
 import cl.duoc.corpalivalbalab.data.local.PedidoEntity
+import cl.duoc.corpalivalbalab.data.repository.PedidoRepository
 import cl.duoc.corpalivalbalab.ui.screens.CotizacionUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import java.util.Locale
 class CotizacionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getDatabase(application)
-    private val pedidoDao = db.pedidoDao()
+    private val repository = PedidoRepository(db.pedidoDao())
 
     private val _uiState = MutableStateFlow(CotizacionUiState())
     val uiState: StateFlow<CotizacionUiState> = _uiState.asStateFlow()
@@ -31,7 +31,7 @@ class CotizacionViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun onCorreoChanged(correo: String) {
-        val esValido = Patterns.EMAIL_ADDRESS.matcher(correo).matches()
+        val esValido = android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()
         _uiState.value = _uiState.value.copy(
             correoCliente = correo,
             errorCorreo = if (!esValido) "Ingresa un correo válido" else null
@@ -58,7 +58,7 @@ class CotizacionViewModel(application: Application) : AndroidViewModel(applicati
         val cant = state.cantidadText.toIntOrNull() ?: 0
 
         val errorNom = if (state.nombreCliente.isBlank()) "El nombre es obligatorio" else null
-        val errorCor = if (!Patterns.EMAIL_ADDRESS.matcher(state.correoCliente).matches()) "Correo inválido" else null
+        val errorCor = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.correoCliente).matches()) "Correo inválido" else null
         val errorTel = if (state.telefonoCliente.length < 8) "Teléfono inválido" else null
         val errorCant = if (cant <= 0) "Cantidad inválida" else null
 
@@ -87,7 +87,7 @@ class CotizacionViewModel(application: Application) : AndroidViewModel(applicati
                 fechaRegistro = fechaActual
             )
 
-            pedidoDao.insertarPedido(nuevoPedido)
+            repository.insertarPedido(nuevoPedido)
 
             _uiState.value = _uiState.value.copy(
                 estaGuardado = true,

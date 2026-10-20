@@ -65,7 +65,7 @@ fun NavGraph() {
     }
 }
 
-// PUNTO 3 INTEGRADO: Función de interpretación de comandos de voz y enrutamiento
+// comandos por voz
 fun processVoiceCommand(command: String, navController: NavController) {
     when {
         command.contains("catálogo") || command.contains("productos") -> {
@@ -75,7 +75,7 @@ fun processVoiceCommand(command: String, navController: NavController) {
             navController.navigate(Screen.Contacto.route)
         }
         command.contains("cotización") || command.contains("cotizar") -> {
-            // Navega por defecto a la cotización con producto ID = 1
+
             navController.navigate(Screen.Cotizacion.createRoute(1))
         }
         command.contains("inicio") || command.contains("home") || command.contains("principal") -> {

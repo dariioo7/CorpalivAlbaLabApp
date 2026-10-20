@@ -48,7 +48,7 @@ fun HomeScreen(
     val telefonoCorpaliv = "+56912345678"
     val direccionCorpaliv = "Lo Encalada 207, Ñuñoa, Santiago, Chile"
 
-    // Launcher para capturar la respuesta del reconocedor de voz nativo
+    // launcher de comandos por voz
     val voiceLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -65,7 +65,7 @@ fun HomeScreen(
         }
     }
 
-    // Función que lanza el reconocedor de voz cuando el permiso ya está concedido
+    // reconocer voz
     fun startVoiceRecognition() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -91,7 +91,7 @@ fun HomeScreen(
         }
     }
 
-    // Launcher para solicitar el permiso de micrófono al sistema
+    // launcher para permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -112,7 +112,7 @@ fun HomeScreen(
                 title = { Text("CORPALIV / Alba Lab", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = {
-                        // Verifica si el permiso de micrófono ya fue otorgado
+                        // verificar permiso
                         val permissionCheck = ContextCompat.checkSelfPermission(
                             context,
                             Manifest.permission.RECORD_AUDIO
@@ -121,7 +121,7 @@ fun HomeScreen(
                         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                             startVoiceRecognition()
                         } else {
-                            // Solicita el permiso al usuario
+                            // solicita el permiso al usuario
                             permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                         }
                     }) {
@@ -144,7 +144,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 1. HEADER INSTITUCIONAL CON LOGO
+            // banner logo
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -181,7 +181,7 @@ fun HomeScreen(
                 }
             }
 
-            // 2. NAVEGACIÓN RÁPIDA (CATÁLOGO Y CONTACTO)
+            // catalogo y voluntario
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -211,7 +211,7 @@ fun HomeScreen(
                 }
             }
 
-            // 3. INDICADORES / KPIs DE IMPACTO SOCIAL
+            // impacto social
             Text(
                 text = "Nuestro Impacto Social",
                 style = MaterialTheme.typography.titleLarge,
@@ -244,7 +244,7 @@ fun HomeScreen(
                 )
             }
 
-            // 4. INFORMACIÓN INSTITUCIONAL Y PROYECTO ALBA LAB
+            // informacion corpaliv
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -275,7 +275,7 @@ fun HomeScreen(
                 }
             }
 
-            // 5. CASO DE ÉXITO / TESTIMONIO
+            // casos de exito
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -295,7 +295,7 @@ fun HomeScreen(
                 }
             }
 
-            // 6. RECURSOS NATIVOS: SECCIÓN DE ATENCIÓN DIRECTA Y UBICACIÓN
+            // llamada y ubicacion
             Text(
                 text = "Atención e Instalaciones",
                 style = MaterialTheme.typography.titleLarge,
@@ -304,7 +304,7 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // Tarjeta de Llamada Telefónica (Recurso Nativo 1)
+            // llamada
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -353,7 +353,7 @@ fun HomeScreen(
                 }
             }
 
-            // Tarjeta de Ubicación / Google Maps (Recurso Nativo 2)
+            // ubicacion
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -409,7 +409,7 @@ fun HomeScreen(
     }
 }
 
-// Componente auxiliar para los KPIs
+
 @Composable
 fun KpiCard(
     icono: ImageVector,
