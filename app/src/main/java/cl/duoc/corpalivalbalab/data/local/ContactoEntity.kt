@@ -1,5 +1,6 @@
 package cl.duoc.corpalivalbalab.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,7 +12,10 @@ data class ContactoEntity(
     val correo: String,
     val telefono: Int,
     val fechaContacto: String,
-    val tipoColaboracion: String,
+
+    @ColumnInfo(name = "recibirCorreo")
     val requiereBoleta: Boolean,
+
+    @ColumnInfo(name = "voluntarioPrimera")
     val suscribirBoletin: Boolean
 )

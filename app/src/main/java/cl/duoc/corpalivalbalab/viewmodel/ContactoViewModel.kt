@@ -102,7 +102,6 @@ class ContactoViewModel(application: Application) : AndroidViewModel(application
                     correo = estadoActual.correo,
                     telefono = estadoActual.telefono.toIntOrNull() ?: 0,
                     fechaContacto = estadoActual.fechaContacto,
-                    tipoColaboracion = "Alianza / General",
                     requiereBoleta = estadoActual.requiereCertificado,
                     suscribirBoletin = estadoActual.suscribirBoletin
                 )
