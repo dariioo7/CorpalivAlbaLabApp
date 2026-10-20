@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessibilityNew
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
@@ -59,7 +60,7 @@ fun HomeScreen(
             onVoiceCommand(command)
             when {
                 command.contains("catálogo") || command.contains("productos") -> onNavigateToCatalogo()
-                command.contains("contacto") || command.contains("ayuda") -> onNavigateToContacto()
+                command.contains("voluntario") || command.contains("ayudar") -> onNavigateToContacto()
             }
         }
     }
@@ -76,7 +77,7 @@ fun HomeScreen(
             putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, "es-CL")
             putExtra(
                 RecognizerIntent.EXTRA_PROMPT,
-                "Di 'Ver catálogo' o 'Contacto'"
+                "Di 'Ver catálogo' o 'Voluntario'"
             )
         }
         try {
@@ -204,9 +205,9 @@ fun HomeScreen(
                         .height(54.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.Email, contentDescription = null)
+                    Icon(Icons.Default.AccessibilityNew, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Contacto")
+                    Text("Voluntario")
                 }
             }
 
