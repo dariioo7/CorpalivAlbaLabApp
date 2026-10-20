@@ -80,7 +80,7 @@ fun ContactoScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Formulario de Vinculación") },
+                title = { Text("Formulario de Voluntariado") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -101,7 +101,7 @@ fun ContactoScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Registro de Interés y Alianzas",
+                text = "Ingrese sus datos",
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -166,7 +166,7 @@ fun ContactoScreen(
                 value = uiState.fechaContacto,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Fecha Preferida de Contacto") },
+                label = { Text("Fecha de disponibilidad") },
                 isError = uiState.fechaError != null,
                 supportingText = {
                     uiState.fechaError?.let { Text(it) }
@@ -190,7 +190,7 @@ fun ContactoScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Deseo información sobre certificados de donación",
+                    text = "Deseo recibir correos sobre noticias",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -202,7 +202,7 @@ fun ContactoScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Suscribirse al boletín de noticias",
+                    text = "Es primera vez siendo voluntario?",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Switch(
